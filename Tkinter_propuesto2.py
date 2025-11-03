@@ -11,6 +11,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import math
 
@@ -53,60 +54,85 @@ def calculadora_cientifica():
 def graficos():
     ventana_secundaria = tk.Toplevel(root)
     ventana_secundaria.title("Graficos")
-    ventana_secundaria.geometry("750x400")
+    ventana_secundaria.geometry("800x700")
 
-    # Etiqueta de bienvenida
-    etiqueta_bienvenida = tk.Label(ventana_secundaria, text="Graficos", font=("Arial", 16, "bold"), fg="darkblue")
-    etiqueta_bienvenida.pack()
+    # Crear figura de matplotlib
+    fig, ax = plt.subplots(figsize=(8, 5))
+    canvas = FigureCanvasTkAgg(fig, master=ventana_secundaria)
+    canvas.get_tk_widget().pack()
 
-    frame_pack = tk.Frame(ventana_secundaria)
-    frame_pack.pack()
+    frame_datos = tk.Frame(ventana_secundaria)
+    frame_datos.pack(pady=10)
 
-    #DATOS A PEDIR
-    et = tk.Label(ventana_secundaria, text="Ingrese el eje X:", font=("Arial", 12))
-    et.pack(pady=10)
-    entrada_eje_x = tk.Entry(ventana_secundaria, font=("Arial", 12))
-    entrada_eje_x.pack(pady=5)
-    boton_graficar = tk.Button(ventana_secundaria, command=lambda: graficar_tangente(), font=("Arial", 12), text="Graficar")
-    boton_graficar.pack(pady=5)
+    # Etiquetas y cuadros de texto para los parámetros
+    et_s = tk.Label(frame_datos, text="Amplitud del Seno:")
+    et_s.grid(row=0, column=0, padx=5, pady=5)
 
+    entrada_seno = tk.Entry(frame_datos)
+    entrada_seno.insert(0, "1")
+    entrada_seno.grid(row=0, column=1, padx=5, pady=5)
 
-    def graficar_seno():
-        # obtenemos el eje X
-        valor = int(entrada_eje_x.get())
+    et_fsen = tk.Label(frame_datos, text="Frecuencia del Seno:")
+    et_fsen.grid(row=0, column=2, padx=5, pady=5)
 
-        x = np.linspace(0, valor, 100)
-        y = np.sin(x)
-        plt.plot(x, y, label='y = sin(x)')
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.title('Grafico Seno')
-        plt.show()
+    entrada_freq_seno = tk.Entry(frame_datos)
+    entrada_freq_seno.insert(0, "1")
+    entrada_freq_seno.grid(row=0, column=3, padx=5, pady=5)
 
+    et_lineal = tk.Label(frame_datos, text="Pendiente de la Lineal:")
+    et_lineal.grid(row=1, column=0, padx=5, pady=5)
 
+    entrada_lineal = tk.Entry(frame_datos)
+    entrada_lineal.insert(0, "0.5")
+    entrada_lineal.grid(row=1, column=1, padx=5, pady=5)
 
-    def graficar_tangente():
-        #Mostrar los campos a pedir boton tangente
-        fn = np.tan
+    et_ftan = tk.Label(frame_datos, text="Frecuencia de la Tangente:")
+    et_ftan.grid(row=2, column=0, padx=5, pady=5)
 
-        x = np.linspace(-2 * np.pi, 2 * np.pi, 1000)
-        points = [i * np.pi / 2 for i in range(-4, 5)]
-        labels = ["-2π", "-3π/2", "-π", "-π/2", "0", "π/2", "π", "3π/2", "2π"]
+    entrada_tan = tk.Entry(frame_datos)
+    entrada_tan.insert(0, "1")
+    entrada_tan.grid(row=2, column=1, padx=5, pady=5) 
 
-        fig, ax = plt.subplots()
-        ax.plot(x, fn(x))
-        ax.set_xticks(points)
-        ax.set_xticklabels(labels)
+    # Función para graficar
+    def generar_grafica():
+        ax.clear()
+        
+        # Obtener valores desde la interfaz
+        try:
+            amp_seno = float(entrada_seno.get())
+            freq_seno = float(entrada_freq_seno.get())
+            m_lineal = float(entrada_lineal.get())
+            freq_tan = float(entrada_tan.get())
+        except ValueError:
+            ax.text(0.5, 0.5, "Por favor ingrese solo números", ha='center', va='center', transform=ax.transAxes)
+            canvas.draw()
+            return
 
-        for pt in points:
-            ax.plot(pt, fn(pt), "ok")
+        # Rango de valores de x
+        x = np.linspace(-2 * np.pi, 2 * np.pi, 400)
 
-        ax.hlines(0, x[0], x[-1], "k")
-        ax.vlines(0, -5, 5, "k")
+        # Calcular funciones
+        y_seno = amp_seno * np.sin(freq_seno * x)
+        y_tan = np.tan(freq_tan * x)
+        y_lineal = m_lineal * x
 
-        plt.ylim(-5, 5)
+        # Dibujar las curvas
+        ax.plot(x, y_seno, label=f"Seno ({amp_seno}·sin({freq_seno}x))", color='blue')
+        ax.plot(x, y_tan, label=f"Tangente ({freq_tan}x)", color='red')
+        ax.plot(x, y_lineal, label=f"Lineal ({m_lineal}x)", color='green')
 
-        plt.show()
+        ax.set_ylim(-10, 10)
+        ax.set_title("Gráfica de Seno, Tangente y Función Lineal")
+        ax.set_xlabel("Eje X")
+        ax.set_ylabel("Eje Y")
+        ax.grid(True)
+        ax.legend()
+
+        canvas.draw()
+
+    # Botón para actualizar las gráficas
+    boton = tk.Button(ventana_secundaria, text="Graficar", command=generar_grafica)
+    boton.pack(pady=10)
 
 
 
@@ -260,3 +286,4 @@ menubar.add_cascade(label="Salir", menu=salir)
 
 # Finalmente bucle de la aplicación
 root.mainloop()
+
