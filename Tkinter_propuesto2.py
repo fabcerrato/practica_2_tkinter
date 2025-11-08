@@ -37,80 +37,60 @@ def abrir_editor():
     ventana_secundaria = tk.Toplevel(root)
     ventana_secundaria.title("Editor de archivo")
     ventana_secundaria.geometry("300x300")
-    import tkinter as tk
-from tkinter import scrolledtext as st
-import sys
-from tkinter import filedialog as fd
-from tkinter import messagebox as mb
 
-class Aplicacion:
-    def __init__(self):
-        self.ventana1=tk.Tk()
-        self.ventana1.title("Mi Editor de texto,(Montoya)")
-        self.agregar_menu()
-        self.scrolledtext1=st.ScrolledText(self.ventana1, width=80, height=20)
-        self.scrolledtext1.grid(column=0,row=0, padx=10, pady=10)
-        self.ventana1.mainloop()
+    class Aplicacion:
+        def __init__(self):
+            self.ventana1=tk.Tk()
+            self.ventana1.title("Mi Editor de texto,(Montoya)")
+            self.agregar_menu()
+            self.scrolledtext1=st.ScrolledText(self.ventana1, width=80, height=20)
+            self.scrolledtext1.grid(column=0,row=0, padx=10, pady=10)
+            self.ventana1.mainloop()
+    
+        def agregar_menu(self):
+            menubar1 = tk.Menu(self.ventana1)
+            self.ventana1.config(menu=menubar1)
+            opciones1 = tk.Menu(menubar1, tearoff=0)
+    
+            opciones1.add_command(label="Guardar archivo", command=self.guardar)
+            opciones1.add_command(label="Abrir y Editar archivo", command=self.recuperar)
+            opciones1.add_separator()
+            opciones1.add_command(label="Salir", command=self.salir)
+            menubar1.add_cascade(label="Archivo", menu=opciones1)
+    
+        # --- Crear el menú "Ayuda" ---
+    
+            menu_ayuda = tk.Menu(self.ventana1)
+            self.ventana1.config(menu=menubar1)
+            menu_ayuda = tk.Menu(menubar1, tearoff=2)
+    
+            menu_ayuda.add_command(label="Acerca de", command=self.acerca_de)
+            menubar1.add_cascade(label="Ayuda", menu=menu_ayuda)
+    
+        def acerca_de(self):
+            mb.showinfo("Acerca de", "Ejemplo de menú en Python con Tkinter.\nAutor: Tu Nombre")
+    
+        def salir(self):
+            sys.exit()
+    
+        def guardar(self):
+            nombrearch=fd.asksaveasfilename(initialdir = "/",title = "Guardar como",filetypes = (("txt files","*.txt"),("todos los archivos","*.*")))
+            if nombrearch!='':
+                archi1=open(nombrearch, "w", encoding="utf-8")
+                archi1.write(self.scrolledtext1.get("1.0", tk.END))
+                archi1.close()
+                mb.showinfo("Información", "Los datos fueron guardados en el archivo.")
+    
+        def recuperar(self):
+            nombrearch=fd.askopenfilename(initialdir = "/",title = "Seleccione archivo",filetypes = (("txt files","*.txt"),("todos los archivos","*.*")))
+            if nombrearch!='':
+                archi1=open(nombrearch, "r", encoding="utf-8")
+                contenido=archi1.read()
+                archi1.close()
+                self.scrolledtext1.delete("1.0", tk.END)
+                self.scrolledtext1.insert("1.0", contenido)
 
-    def agregar_menu(self):
-        menubar1 = tk.Menu(self.ventana1)
-        self.ventana1.config(menu=menubar1)
-        opciones1 = tk.Menu(menubar1, tearoff=0)
-
-        opciones1.add_command(label="Guardar archivo", command=self.guardar)
-        opciones1.add_command(label="Abrir y Editar archivo", command=self.recuperar)
-        opciones1.add_separator()
-        opciones1.add_command(label="Salir", command=self.salir)
-        menubar1.add_cascade(label="Archivo", menu=opciones1)
-
-    # Menú Edición
-
-        #menubar1 = tk.Menu(self.Ventana1)
-       # self.ventana1.config(menu=menubar1)
-        #edicion_menu = tk.Menu(menubar1, tearoff=1)
-
-        #edicion_menu.add_command(label="Deshacer", command=self.text_area.edit_undo)
-        #edicion_menu.add_command(label="Rehacer", command=self.text_area.edit_redo)
-        #edicion_menu.add_separator()
-        #edicion_menu.add_command(label="Copiar", command=lambda: self.text_area.event_generate("<<Copy>>"))
-        #edicion_menu.add_command(label="Cortar", command=lambda: self.text_area.event_generate("<<Cut>>"))
-        #edicion_menu.add_command(label="Pegar", command=lambda: self.text_area.event_generate("<<Paste>>"))
-
-        #menubar1.add_cascade(label="Edición", menu=edicion_menu)
-
-    # --- Crear el menú "Ayuda" ---
-
-        menu_ayuda = tk.Menu(self.ventana1)
-        self.ventana1.config(menu=menubar1)
-        menu_ayuda = tk.Menu(menubar1, tearoff=2)
-
-        menu_ayuda.add_command(label="Acerca de", command=self.acerca_de)
-        menubar1.add_cascade(label="Ayuda", menu=menu_ayuda)
-
-    def acerca_de(self):
-        mb.showinfo("Acerca de", "Ejemplo de menú en Python con Tkinter.\nAutor: Tu Nombre")
-
-    def salir(self):
-        sys.exit()
-
-    def guardar(self):
-        nombrearch=fd.asksaveasfilename(initialdir = "/",title = "Guardar como",filetypes = (("txt files","*.txt"),("todos los archivos","*.*")))
-        if nombrearch!='':
-            archi1=open(nombrearch, "w", encoding="utf-8")
-            archi1.write(self.scrolledtext1.get("1.0", tk.END))
-            archi1.close()
-            mb.showinfo("Información", "Los datos fueron guardados en el archivo.")
-
-    def recuperar(self):
-        nombrearch=fd.askopenfilename(initialdir = "/",title = "Seleccione archivo",filetypes = (("txt files","*.txt"),("todos los archivos","*.*")))
-        if nombrearch!='':
-            archi1=open(nombrearch, "r", encoding="utf-8")
-            contenido=archi1.read()
-            archi1.close()
-            self.scrolledtext1.delete("1.0", tk.END)
-            self.scrolledtext1.insert("1.0", contenido)
-
-aplicacion1=Aplicacion()
+#aplicacion1=Aplicacion()
 
 
 def calculadora_estandar():
@@ -360,5 +340,6 @@ menubar.add_cascade(label="Salir", menu=salir)
 
 # Finalmente bucle de la aplicación
 root.mainloop()
+
 
 
